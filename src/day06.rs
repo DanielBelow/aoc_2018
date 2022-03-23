@@ -6,13 +6,15 @@ use std::collections::HashSet;
 #[derive(Display, FromStr, Hash, Eq, PartialEq, Copy, Clone, Debug)]
 #[display("{x}, {y}")]
 pub struct Point {
-    x: u32,
-    y: u32,
+    x: i32,
+    y: i32,
 }
 
 impl Point {
-    fn manhatten_distance(self, x: u32, y: u32) -> u32 {
-        self.x.abs_diff(x) + self.y.abs_diff(y)
+    fn manhatten_distance(self, x: i32, y: i32) -> i32 {
+        let x_diff = x - self.x;
+        let y_diff = y - self.y;
+        x_diff.abs() + y_diff.abs()
     }
 }
 
@@ -27,7 +29,7 @@ pub fn part1(points: &[Point]) -> Option<usize> {
     let (min_y, max_y) = points.iter().map(|it| it.y).minmax().into_option()?;
 
     let is_on_edge =
-        |x: u32, y: u32| -> bool { min_x == x || max_x == x || min_y == y || max_y == y };
+        |x: i32, y: i32| -> bool { min_x == x || max_x == x || min_y == y || max_y == y };
 
     let mut infinite_regions = HashSet::new();
     let mut single_points = Vec::new();
@@ -71,7 +73,7 @@ pub fn part2(points: &[Point]) -> Option<usize> {
                 points
                     .iter()
                     .map(|p| p.manhatten_distance(x, y))
-                    .sum::<u32>()
+                    .sum::<i32>()
             })
             .filter(|it| *it < 10_000)
             .count(),
