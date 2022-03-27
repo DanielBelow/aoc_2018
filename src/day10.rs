@@ -1,7 +1,7 @@
 use aoc_runner_derive::{aoc, aoc_generator};
-use itertools::{iproduct, Itertools, MinMaxResult, Position};
+use itertools::Itertools;
 use parse_display::{Display, FromStr};
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 #[derive(Display, FromStr, Copy, Clone)]
 #[display("{x},{y}")]
@@ -23,16 +23,6 @@ pub fn generate(inp: &str) -> Vec<LightPoint> {
         .map(|it| it.replace(' ', ""))
         .filter_map(|it| it.parse().ok())
         .collect_vec()
-}
-
-fn print_map(map: &[Vec<char>]) {
-    for row in map {
-        for col in row {
-            print!("{}", col);
-        }
-
-        println!();
-    }
 }
 
 #[aoc(day10, part1)]
