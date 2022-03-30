@@ -13,10 +13,9 @@ pub struct Point {
 
 impl Point {
     fn manhattan_distance(&self, pt: &Point) -> u64 {
-        self.x.abs_diff(pt.x)
-            + self.y.abs_diff(pt.y)
-            + self.z.abs_diff(pt.z)
-            + self.w.abs_diff(pt.w)
+        let diff = |lhs: i64, rhs: i64| -> u64 { (lhs - rhs).abs() as u64 };
+
+        diff(self.x, pt.x) + diff(self.y, pt.y) + diff(self.z, pt.z) + diff(self.w, pt.w)
     }
 }
 
