@@ -1,8 +1,6 @@
 use aoc_runner_derive::{aoc, aoc_generator};
 use std::collections::HashMap;
 
-const MAP_SIZE: usize = 50;
-
 #[derive(Hash, PartialEq, Eq, Copy, Clone)]
 pub enum Tile {
     Open,
@@ -32,7 +30,7 @@ fn collect_surrounding(x: usize, y: usize, current: &[Vec<Tile>]) -> Vec<Tile> {
     let mut result = Vec::new();
 
     let take_left = x > 0;
-    let take_right = x + 1 < MAP_SIZE;
+    let take_right = x + 1 < current.len();
 
     // row above
     if let Some(py) = y.checked_sub(1) {
@@ -105,7 +103,8 @@ fn pick_new_tile(x: usize, y: usize, current: &[Vec<Tile>]) -> Tile {
 }
 
 fn simulate(current: &[Vec<Tile>]) -> Vec<Vec<Tile>> {
-    let mut res = vec![vec![Tile::Open; MAP_SIZE]; MAP_SIZE];
+    let map_size = current.len();
+    let mut res = vec![vec![Tile::Open; map_size]; map_size];
 
     for y in 0..current.len() {
         for x in 0..current[y].len() {
