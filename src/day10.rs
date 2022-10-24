@@ -63,7 +63,7 @@ pub fn part1(points: &[LightPoint]) -> Option<String> {
             } else {
                 '.'
             };
-            print!("{}", c);
+            print!("{c}");
         }
 
         println!();

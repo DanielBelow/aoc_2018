@@ -40,7 +40,7 @@ pub fn part1(polymer: &str) -> usize {
 pub fn part2(polymer: &str) -> Option<usize> {
     ('a'..='z')
         .map(|it| {
-            let new_polymer = polymer.replace(it, "").replace(it.to_ascii_uppercase(), "");
+            let new_polymer = polymer.replace([it, it.to_ascii_uppercase()], "");
             let fully_reacted = perform_reaction(&new_polymer);
             fully_reacted.len()
         })

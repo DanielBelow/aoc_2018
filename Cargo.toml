@@ -13,8 +13,5 @@ path = "src/lib.rs"
 aoc-runner = "0.3.0"
 aoc-runner-derive = "0.3.0"
 itertools = "0.10.1"
-parse-display = "0.5.3"
-parse-display-derive = "0.5.3"
-
-[profile.test]
-opt-level = 3
+parse-display = "0.6.0"
+parse-display-derive = "0.6.0"

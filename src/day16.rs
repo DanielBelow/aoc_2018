@@ -64,8 +64,7 @@ fn parse_register_values(line: &str, prefix: &str) -> [usize; 4] {
     let res = line
         .strip_prefix(prefix)
         .unwrap()
-        .replace('[', "")
-        .replace(']', "")
+        .replace(['[', ']'], "")
         .split(", ")
         .filter_map(|it| it.trim().parse::<usize>().ok())
         .collect_vec();

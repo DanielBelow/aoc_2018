@@ -46,7 +46,7 @@ pub fn part1(claims: &[Claim]) -> usize {
     fabric
         .iter()
         .flat_map(Clone::clone)
-        .fold(0, |acc, it| acc + if it > 1 { 1 } else { 0 })
+        .fold(0, |acc, it| acc + usize::from(it > 1))
 }
 
 fn has_no_overlap(claim: &Claim, other_claims: &[&Claim]) -> bool {
