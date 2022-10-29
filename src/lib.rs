@@ -1,6 +1,11 @@
 #![deny(unsafe_code)]
 #![warn(nonstandard_style, rust_2018_idioms)]
-#![allow(clippy::implicit_hasher)]
+#![allow(
+    clippy::implicit_hasher,
+    clippy::similar_names,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
 
 mod day01;
 mod day02;

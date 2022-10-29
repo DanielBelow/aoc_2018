@@ -17,4 +17,4 @@ jobs:
       - name: rustfmt
         run: cargo fmt -- --check
       - name: clippy
-        run: cargo clippy -- -Dwarnings
+        run: cargo clippy --all-targets -- -Dwarnings
