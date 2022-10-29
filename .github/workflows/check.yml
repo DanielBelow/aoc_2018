@@ -12,11 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build
-        run: cargo build --verbose
+      - name: Test
+        run: cargo test --verbose
       - name: rustfmt
         run: cargo fmt -- --check
       - name: clippy
         run: cargo clippy -- -Dwarnings
-      - name: Test
-        run: cargo test --verbose
