@@ -87,6 +87,7 @@ pub fn generate(inp: &str) -> Map {
 
     for (row_idx, line) in inp.lines().enumerate() {
         for (col_idx, chr) in line.chars().enumerate() {
+            #[allow(clippy::cast_possible_wrap)]
             let position = Complex::new(col_idx as i64, row_idx as i64);
             match chr {
                 '/' | '\\' | '+' => {

@@ -59,6 +59,6 @@ mod tests {
         };
 
         let result = part1(&state);
-        assert_eq!(result.unwrap(), 32);
+        assert_eq!(result, Some(32));
     }
 }

@@ -8,7 +8,7 @@ pub struct Header {
 }
 
 impl Header {
-    fn new(num_children: usize, num_metadata: usize) -> Self {
+    const fn new(num_children: usize, num_metadata: usize) -> Self {
         Self {
             num_children,
             num_metadata,
@@ -111,18 +111,20 @@ mod tests {
 
     #[test]
     fn test_sample_p1() {
-        let data = generate(TEST_INPUT);
-        assert!(data.is_some());
-        let data = data.unwrap();
+        let Some(data) = generate(TEST_INPUT) else {
+            panic!("Could not parse test input")
+        };
+
         let res = part1(&data);
         assert_eq!(res, 138);
     }
 
     #[test]
     fn test_sample_p2() {
-        let data = generate(TEST_INPUT);
-        assert!(data.is_some());
-        let data = data.unwrap();
+        let Some(data) = generate(TEST_INPUT) else {
+            panic!("Could not parse test input")
+        };
+
         let res = part2(&data);
         assert_eq!(res, 66);
     }

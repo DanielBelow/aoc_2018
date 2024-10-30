@@ -70,10 +70,13 @@ pub fn generate(inp: &str) -> Vec<Event> {
 }
 
 fn build_guard_schedule(events: &[Event]) -> (u32, Vec<(u32, u32)>) {
-    let mut cur_guard = None;
-    if let Event::ShiftBegin { guard_id, .. } = events[0] {
-        cur_guard = Some(guard_id);
-    }
+    let Event::ShiftBegin {
+        guard_id: cur_guard,
+        ..
+    } = events[0]
+    else {
+        panic!("First event was not ShiftBegin")
+    };
 
     let guard_events = events
         .iter()
@@ -98,15 +101,16 @@ fn build_guard_schedule(events: &[Event]) -> (u32, Vec<(u32, u32)>) {
                 sleep_until = Some(date.minute);
             }
 
-            assert!(sleep_from.is_some() && sleep_until.is_some());
+            let sleep_from = sleep_from.expect("Fall asleep event happened");
+            let sleep_until = sleep_until.expect("Wake up event happened");
+
             idx += 2;
 
-            sleep_times.push((sleep_from.unwrap(), sleep_until.unwrap()));
+            sleep_times.push((sleep_from, sleep_until));
         }
     }
 
-    assert!(cur_guard.is_some());
-    (cur_guard.unwrap(), sleep_times)
+    (cur_guard, sleep_times)
 }
 
 fn get_guard_schedule(events: &[Event]) -> HashMap<u32, Vec<usize>> {
@@ -164,7 +168,7 @@ pub fn part2(events: &[Event]) -> Option<usize> {
                 .iter()
                 .enumerate()
                 .max_by_key(|(_, number_asleep)| **number_asleep)
-                .unwrap();
+                .expect("Times aren't empty");
             (id, max_minute, times_slept)
         })
         .max_by_key(|(_, _, times_slept)| **times_slept)?;
@@ -198,13 +202,13 @@ mod tests {
     fn test_sample_p1() {
         let data = generate(TEST_INPUT);
         let res = part1(&data);
-        assert_eq!(res.unwrap(), 240);
+        assert_eq!(res, Some(240));
     }
 
     #[test]
     fn test_sample_p2() {
         let data = generate(TEST_INPUT);
         let res = part2(&data);
-        assert_eq!(res.unwrap(), 4455);
+        assert_eq!(res, Some(4455));
     }
 }

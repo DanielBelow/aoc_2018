@@ -1,5 +1,5 @@
 use aoc_runner_derive::{aoc, aoc_generator};
-use itertools::Itertools;
+use itertools::{FoldWhile, Itertools};
 use std::collections::HashSet;
 
 #[derive(Copy, Clone, Debug)]
@@ -18,7 +18,14 @@ fn parse_initial_state(line: &str) -> Option<HashSet<i64>> {
     let initial_state = state
         .chars()
         .enumerate()
-        .filter_map(|(idx, it)| if it == '#' { Some(idx as i64) } else { None })
+        .filter_map(|(idx, it)| {
+            if it == '#' {
+                #[allow(clippy::cast_possible_wrap)]
+                Some(idx as i64)
+            } else {
+                None
+            }
+        })
         .collect::<HashSet<_>>();
 
     Some(initial_state)
@@ -49,15 +56,15 @@ pub fn generate(inp: &str) -> Option<Input> {
     })
 }
 
-fn simulate(cur_state: &HashSet<i64>, rules: &[Rule]) -> HashSet<i64> {
+fn simulate(cur_state: &HashSet<i64>, rules: &[Rule]) -> Option<HashSet<i64>> {
     const WINDOW: [i64; 5] = [-2, -1, 0, 1, 2];
 
     assert!(!cur_state.is_empty());
 
     let mut result = HashSet::new();
 
-    let start = *cur_state.iter().min().unwrap();
-    let end = *cur_state.iter().max().unwrap();
+    let start = *cur_state.iter().min()?;
+    let end = *cur_state.iter().max()?;
 
     for idx in (start - 3)..=(end + 3) {
         let window = WINDOW.map(|it| {
@@ -74,11 +81,15 @@ fn simulate(cur_state: &HashSet<i64>, rules: &[Rule]) -> HashSet<i64> {
         }
     }
 
-    result
+    Some(result)
 }
 
 fn simulate_state(state: HashSet<i64>, rules: &[Rule], generations: i64) -> HashSet<i64> {
-    (0..generations).fold(state, |acc, _| simulate(&acc, rules))
+    (0..generations)
+        .fold_while(state, |acc, _| {
+            simulate(&acc, rules).map_or_else(|| FoldWhile::Done(acc), FoldWhile::Continue)
+        })
+        .into_inner()
 }
 
 #[aoc(day12, part1)]
@@ -120,8 +131,11 @@ mod tests {
 
     #[test]
     fn test_sample_p1() {
-        let data = generate(TEST_INPUT);
-        let res = part1(&data.unwrap());
+        let Some(data) = generate(TEST_INPUT) else {
+            panic!("Could not parse test input")
+        };
+
+        let res = part1(&data);
         assert_eq!(res, 325);
     }
 }

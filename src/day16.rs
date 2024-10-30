@@ -60,16 +60,15 @@ fn execute_inst(mut regs: [usize; 4], inst: [usize; 4], kind: Instruction) -> [u
     regs
 }
 
-fn parse_register_values(line: &str, prefix: &str) -> [usize; 4] {
+fn parse_register_values(line: &str, prefix: &str) -> Option<[usize; 4]> {
     let res = line
-        .strip_prefix(prefix)
-        .unwrap()
+        .strip_prefix(prefix)?
         .replace(['[', ']'], "")
         .split(", ")
         .filter_map(|it| it.trim().parse::<usize>().ok())
         .collect_vec();
 
-    [res[0], res[1], res[2], res[3]]
+    Some([res[0], res[1], res[2], res[3]])
 }
 
 fn parse_instruction(line: &str) -> [usize; 4] {
@@ -81,7 +80,7 @@ fn parse_instruction(line: &str) -> [usize; 4] {
 }
 
 #[aoc_generator(day16)]
-pub fn generate(inp: &str) -> (Vec<InstructionSamples>, Vec<[usize; 4]>) {
+pub fn generate(inp: &str) -> Option<(Vec<InstructionSamples>, Vec<[usize; 4]>)> {
     let inp = inp.split("\n\n\n").collect_vec();
     assert_eq!(inp.len(), 2);
 
@@ -95,8 +94,8 @@ pub fn generate(inp: &str) -> (Vec<InstructionSamples>, Vec<[usize; 4]>) {
 
         for chunk in input_lines.chunks(3) {
             if let [before, inst, after] = chunk {
-                let before = parse_register_values(before, "Before: ");
-                let after = parse_register_values(after, "After: ");
+                let before = parse_register_values(before, "Before: ")?;
+                let after = parse_register_values(after, "After: ")?;
                 let inst = inst
                     .split_ascii_whitespace()
                     .filter_map(|it| it.parse::<usize>().ok())
@@ -116,13 +115,13 @@ pub fn generate(inp: &str) -> (Vec<InstructionSamples>, Vec<[usize; 4]>) {
             insts.push(parsed_inst);
         }
 
-        return (result, insts);
+        return Some((result, insts));
     }
 
     unreachable!("Couldn't parse input")
 }
 
-fn all_instruction_kinds() -> [Instruction; 16] {
+const fn all_instruction_kinds() -> [Instruction; 16] {
     [
         Instruction::Addr,
         Instruction::Addi,
@@ -206,12 +205,12 @@ pub fn part2((samples, program): &(Vec<InstructionSamples>, Vec<[usize; 4]>)) ->
 
     let inst_map = map
         .iter()
-        .map(|(k, v)| (*k, *v.iter().exactly_one().unwrap()))
+        .map(|(k, v)| (*k, *v.iter().exactly_one().expect("Exactly one element")))
         .collect::<HashMap<_, _>>();
 
     let mut regs = [0usize; 4];
     for inst in program {
-        let inst_to_execute = inst_map.get(&inst[0]).unwrap();
+        let inst_to_execute = inst_map.get(&inst[0]).expect("Inst exists");
         regs = execute_inst(regs, *inst, *inst_to_execute);
     }
 

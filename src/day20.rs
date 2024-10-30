@@ -13,7 +13,7 @@ fn update_position(c: char, x: isize, y: isize) -> (isize, isize) {
 }
 
 #[aoc_generator(day20)]
-pub fn generate(inp: &str) -> HashMap<(isize, isize), usize> {
+pub fn generate(inp: &str) -> Option<HashMap<(isize, isize), usize>> {
     let (mut x, mut y) = (0isize, 0isize);
     let (mut prev_x, mut prev_y) = (x, y);
     let mut pos = vec![];
@@ -23,8 +23,8 @@ pub fn generate(inp: &str) -> HashMap<(isize, isize), usize> {
     for c in inp.chars().dropping(1).dropping_back(1) {
         match c {
             '(' => pos.push((x, y)),
-            ')' => (x, y) = pos.pop().unwrap(),
-            '|' => (x, y) = *pos.last().unwrap(),
+            ')' => (x, y) = pos.pop()?,
+            '|' => (x, y) = *pos.last()?,
             _ => {
                 (x, y) = update_position(c, x, y);
 
@@ -41,7 +41,7 @@ pub fn generate(inp: &str) -> HashMap<(isize, isize), usize> {
         prev_y = y;
     }
 
-    result
+    Some(result)
 }
 
 #[aoc(day20, part1)]

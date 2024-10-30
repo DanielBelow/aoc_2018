@@ -22,7 +22,7 @@ pub struct Attack {
 }
 
 impl Attack {
-    pub fn new(damage_type: DamageType, power: usize) -> Self {
+    pub const fn new(damage_type: DamageType, power: usize) -> Self {
         Self { damage_type, power }
     }
 }
@@ -37,7 +37,7 @@ pub struct UnitGroup {
 }
 
 impl UnitGroup {
-    pub fn new(
+    pub const fn new(
         num_units: usize,
         hp_per_unit: usize,
         affinities: Vec<Affinity>,
@@ -53,7 +53,7 @@ impl UnitGroup {
         }
     }
 
-    pub fn effective_power(&self) -> usize {
+    pub const fn effective_power(&self) -> usize {
         self.num_units * self.attack.power
     }
 

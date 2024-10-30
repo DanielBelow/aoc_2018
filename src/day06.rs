@@ -11,7 +11,7 @@ pub struct Point {
 }
 
 impl Point {
-    fn manhatten_distance(self, x: i32, y: i32) -> i32 {
+    const fn manhatten_distance(self, x: i32, y: i32) -> i32 {
         let x_diff = x - self.x;
         let y_diff = y - self.y;
         x_diff.abs() + y_diff.abs()
@@ -95,6 +95,6 @@ mod tests {
     fn test_sample_p1() {
         let data = generate(TEST_INPUT);
         let res = part1(&data);
-        assert_eq!(res.unwrap(), 17);
+        assert_eq!(res, Some(17));
     }
 }

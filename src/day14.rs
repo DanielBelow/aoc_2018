@@ -8,7 +8,7 @@ pub fn generate(inp: &str) -> Option<usize> {
 
 #[allow(clippy::cast_possible_truncation)]
 fn char_to_digit(c: char) -> u8 {
-    c.to_digit(10).unwrap() as u8
+    c.to_digit(10).expect("Char is representable as u8") as u8
 }
 
 fn add_new_recipes(elf1: usize, elf2: usize, recipes: &mut Vec<u8>) {
@@ -18,7 +18,7 @@ fn add_new_recipes(elf1: usize, elf2: usize, recipes: &mut Vec<u8>) {
     }
 }
 
-fn update_elf_positions(elf1: usize, elf2: usize, recipes: &[u8]) -> (usize, usize) {
+const fn update_elf_positions(elf1: usize, elf2: usize, recipes: &[u8]) -> (usize, usize) {
     let elf1_steps = recipes[elf1] + 1;
     let elf2_steps = recipes[elf2] + 1;
 

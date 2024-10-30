@@ -62,6 +62,6 @@ mod tests {
     #[test]
     fn test_sample_p2() {
         let res = part2(TEST_INPUT);
-        assert_eq!(res.unwrap(), 4);
+        assert_eq!(res, Some(4));
     }
 }

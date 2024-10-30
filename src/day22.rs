@@ -36,7 +36,7 @@ pub fn generate(inp: &str) -> Option<MapData> {
     Some(MapData { depth, target })
 }
 
-fn erosion_level(depth: usize, geological_index: usize) -> usize {
+const fn erosion_level(depth: usize, geological_index: usize) -> usize {
     (depth + geological_index) % 20_183
 }
 
@@ -48,16 +48,16 @@ pub enum Tile {
 }
 
 impl Tile {
-    fn int_value(self) -> usize {
+    const fn int_value(self) -> usize {
         match self {
-            Tile::Rocky => 0,
-            Tile::Wet => 1,
-            Tile::Narrow => 2,
+            Self::Rocky => 0,
+            Self::Wet => 1,
+            Self::Narrow => 2,
         }
     }
 }
 
-fn generate_map(data: &MapData) -> Vec<Vec<Tile>> {
+fn generate_map(data: &MapData) -> Option<Vec<Vec<Tile>>> {
     let mut geological_indices = HashMap::new();
 
     for (y, x) in iproduct!(0..=data.target.im, 0..=data.target.re) {
@@ -68,8 +68,8 @@ fn generate_map(data: &MapData) -> Vec<Vec<Tile>> {
         } else if x == 0 {
             y * 48_271
         } else {
-            let lhs_gi = geological_indices.get(&Complex::new(x - 1, y)).unwrap();
-            let rhs_gi = geological_indices.get(&Complex::new(x, y - 1)).unwrap();
+            let lhs_gi = geological_indices.get(&Complex::new(x - 1, y))?;
+            let rhs_gi = geological_indices.get(&Complex::new(x, y - 1))?;
 
             erosion_level(data.depth, *lhs_gi) * erosion_level(data.depth, *rhs_gi)
         };
@@ -88,7 +88,7 @@ fn generate_map(data: &MapData) -> Vec<Vec<Tile>> {
     let mut result = vec![vec![Tile::Narrow; cols]; rows];
 
     for (y, x) in iproduct!(0..=data.target.im, 0..=data.target.re) {
-        result[y][x] = match erosion_levels.get(&Complex::new(x, y)).unwrap() {
+        result[y][x] = match erosion_levels.get(&Complex::new(x, y))? {
             0 => Tile::Rocky,
             1 => Tile::Wet,
             2 => Tile::Narrow,
@@ -96,22 +96,24 @@ fn generate_map(data: &MapData) -> Vec<Vec<Tile>> {
         };
     }
 
-    result
+    Some(result)
 }
 
 #[aoc(day22, part1)]
-pub fn part1(data: &MapData) -> usize {
-    generate_map(data)
-        .iter()
-        .flatten()
-        .map(|it| it.int_value())
-        .sum::<usize>()
+pub fn part1(data: &MapData) -> Option<usize> {
+    Some(
+        generate_map(data)?
+            .iter()
+            .flatten()
+            .map(|it| it.int_value())
+            .sum::<usize>(),
+    )
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 enum Gear {
     None,
-    ClimbingGear,
+    Climbing,
     Torch,
 }
 
@@ -135,14 +137,14 @@ fn can_use_gear_in_region(gear: Gear, region: Tile) -> bool {
         Tile::Wet => gear != Gear::Torch,
         // In narrow regions, you can use the torch or neither tool. You cannot use the climbing gear
         // => deny ClimbingGear
-        Tile::Narrow => gear != Gear::ClimbingGear,
+        Tile::Narrow => gear != Gear::Climbing,
     }
 }
 
 fn get_gear_for_region(region: Tile) -> Vec<Gear> {
     match region {
-        Tile::Rocky => vec![Gear::Torch, Gear::ClimbingGear],
-        Tile::Wet => vec![Gear::None, Gear::ClimbingGear],
+        Tile::Rocky => vec![Gear::Torch, Gear::Climbing],
+        Tile::Wet => vec![Gear::None, Gear::Climbing],
         Tile::Narrow => vec![Gear::None, Gear::Torch],
     }
 }
@@ -235,13 +237,13 @@ fn get_successors(state: &State, map: &[Vec<Tile>]) -> Vec<(State, usize)> {
 }
 
 #[aoc(day22, part2)]
-pub fn part2(data: &MapData) -> usize {
+pub fn part2(data: &MapData) -> Option<usize> {
     let bigger_data = MapData {
         depth: data.depth,
         target: Complex::new(data.target.re + 50, data.target.im + 50),
     };
 
-    let map = generate_map(&bigger_data);
+    let map = generate_map(&bigger_data)?;
 
     let state = State {
         position: Complex::new(0, 0),
@@ -254,8 +256,8 @@ pub fn part2(data: &MapData) -> usize {
         |it| it.position == data.target,
     ) {
         // need a torch at the end
-        let add_gear_swap = path.last().unwrap().gear != Gear::Torch;
-        return cost + if add_gear_swap { 7 } else { 0 };
+        let add_gear_swap = path.last()?.gear != Gear::Torch;
+        return Some(cost + if add_gear_swap { 7 } else { 0 });
     }
 
     unreachable!()
@@ -273,6 +275,6 @@ mod tests {
         };
 
         let result = part1(&data);
-        assert_eq!(result, 114);
+        assert_eq!(result, Some(114));
     }
 }

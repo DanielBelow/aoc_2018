@@ -58,7 +58,7 @@ pub fn part1(steps: &[Step]) -> String {
     result
 }
 
-fn char_index(c: char) -> u8 {
+const fn char_index(c: char) -> u8 {
     ((c as u8) - b'A') + 1
 }
 
@@ -94,7 +94,7 @@ pub fn part2(steps: &[Step]) -> u64 {
             let pos = workers
                 .iter()
                 .position(|(k, _)| *k == finished_node)
-                .unwrap();
+                .expect("finished_node exists");
             workers.remove(pos);
         }
 

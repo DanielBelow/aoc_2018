@@ -49,11 +49,11 @@ impl PartialOrd<Self> for Enemy {
 }
 
 impl Enemy {
-    fn elf(position: Complex<i64>) -> Self {
+    const fn elf(position: Complex<i64>) -> Self {
         Self::elf_with_ap(position, 3)
     }
 
-    fn goblin(position: Complex<i64>) -> Self {
+    const fn goblin(position: Complex<i64>) -> Self {
         Self {
             kind: Kind::Goblin,
             position,
@@ -63,7 +63,7 @@ impl Enemy {
         }
     }
 
-    fn elf_with_ap(position: Complex<i64>, ap: i64) -> Self {
+    const fn elf_with_ap(position: Complex<i64>, ap: i64) -> Self {
         Self {
             kind: Kind::Elf,
             position,
@@ -110,6 +110,7 @@ pub fn generate(inp: &str) -> Map {
 
     for (row_idx, line) in inp.lines().enumerate() {
         for (col_idx, chr) in line.chars().enumerate() {
+            #[allow(clippy::cast_possible_wrap)]
             let cur_pos = Complex::new(row_idx as i64, col_idx as i64);
             if chr == 'E' {
                 enemies.push(Enemy::elf(cur_pos));
@@ -217,7 +218,7 @@ pub enum GameState {
 
 fn play_round(
     tiles: &HashMap<Complex<i64>, Tile>,
-    enemies: &mut Vec<Enemy>,
+    enemies: &mut [Enemy],
     fail_on_dead_elf: bool,
 ) -> Result<(), GameState> {
     enemies.sort();
@@ -319,7 +320,7 @@ pub fn part2(map: &Map) -> i64 {
         let mut round = 0;
         loop {
             match play_round(&map.tiles, &mut enemies, true) {
-                Ok(_) => round += 1,
+                Ok(()) => round += 1,
                 Err(GameState::DeadElf) => break,
                 Err(GameState::NoTargets) => return round * remaining_hp(&enemies),
             };

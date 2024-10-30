@@ -12,7 +12,7 @@ pub struct Position {
 }
 
 impl Position {
-    fn distance_to(&self, other: &Position) -> u64 {
+    const fn distance_to(&self, other: &Self) -> u64 {
         self.x.abs_diff(other.x) + self.y.abs_diff(other.y) + self.z.abs_diff(other.z)
     }
 }
@@ -25,11 +25,11 @@ pub struct Bot {
 }
 
 impl Bot {
-    fn is_in_range_of(&self, pos: &Position) -> bool {
+    const fn is_in_range_of(&self, pos: &Position) -> bool {
         self.pos.distance_to(pos) <= self.range
     }
 
-    fn shares_points_with(&self, other: &Bot) -> bool {
+    const fn shares_points_with(&self, other: &Self) -> bool {
         self.pos.distance_to(&other.pos) <= self.range + other.range
     }
 }
@@ -72,16 +72,20 @@ impl BronKerbosch {
         } else {
             let most_neighbours_p_and_x = p
                 .union(x)
-                .max_by_key(|it| self.neighbours.get(*it).unwrap().len())
-                .unwrap();
+                .max_by_key(|it| self.neighbours.get(*it).expect("Neighbour exists").len())
+                .expect("Non-empty set");
 
             let p_without_neighbours = p
-                .difference(self.neighbours.get(most_neighbours_p_and_x).unwrap())
+                .difference(
+                    self.neighbours
+                        .get(most_neighbours_p_and_x)
+                        .expect("Neighbour exists"),
+                )
                 .copied()
                 .collect_vec();
 
             for v in p_without_neighbours {
-                let v_neighbours = self.neighbours.get(&v).unwrap();
+                let v_neighbours = self.neighbours.get(&v).expect("Neighbour exists");
                 let mut r_with_v = r.clone();
                 r_with_v.insert(v);
                 self.execute(

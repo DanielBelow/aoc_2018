@@ -13,15 +13,15 @@ pub struct Claim {
 }
 
 impl Claim {
-    fn overlaps_1d((l_min, l_max): (usize, usize), (r_min, r_max): (usize, usize)) -> bool {
+    const fn overlaps_1d((l_min, l_max): (usize, usize), (r_min, r_max): (usize, usize)) -> bool {
         l_max > r_min && r_max > l_min
     }
 
-    pub fn overlaps_with(&self, other: &Claim) -> bool {
-        Claim::overlaps_1d(
+    pub const fn overlaps_with(&self, other: &Self) -> bool {
+        Self::overlaps_1d(
             (self.x_pos, self.x_pos + self.width),
             (other.x_pos, other.x_pos + other.width),
-        ) && Claim::overlaps_1d(
+        ) && Self::overlaps_1d(
             (self.y_pos, self.y_pos + self.height),
             (other.y_pos, other.y_pos + other.height),
         )

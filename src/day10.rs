@@ -73,6 +73,6 @@ pub fn part1(points: &[LightPoint]) -> Option<String> {
 }
 
 #[aoc(day10, part2)]
-pub fn part2(_: &[LightPoint]) -> u64 {
+pub const fn part2(_: &[LightPoint]) -> u64 {
     10_880
 }

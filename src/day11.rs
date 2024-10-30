@@ -29,11 +29,11 @@ pub fn generate(inp: &str) -> Option<i64> {
     inp.parse().ok()
 }
 
-fn hundreds_digit(num: i64) -> i64 {
+const fn hundreds_digit(num: i64) -> i64 {
     (num / 100) % 10
 }
 
-fn compute_power_level(serial_number: i64, x: i64, y: i64) -> i64 {
+const fn compute_power_level(serial_number: i64, x: i64, y: i64) -> i64 {
     let rack_id = x + 10;
 
     let mut power_level = rack_id * y;
@@ -53,6 +53,7 @@ fn get_summed_area_table(serial_number: i64) -> Vec<Vec<i64>> {
     let mut grid = vec![vec![0; GRID_SIZE]; GRID_SIZE];
 
     for (x, y) in iproduct!(0..GRID_SIZE, 0..GRID_SIZE) {
+        #[allow(clippy::cast_possible_wrap)]
         let power_level = compute_power_level(serial_number, x as i64, y as i64);
 
         let a = if y > 0 { grid[y - 1][x] } else { 0 };
